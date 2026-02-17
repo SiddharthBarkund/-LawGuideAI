@@ -88,15 +88,15 @@ DOCUMENT_STORE = {}
 # ════════════════════════════════════════════════════════════════════════════════
 
 # PRIMARY: Google Gemini 1.5 Pro (REQUIRED - मुख्य आणि सर्वात शक्तिशाली)
-GOOGLE_API_KEY = "AIzaSyAgTLjPEZE0LxLUR_XXcPoEoXnHP-m8qJM"
+GOOGLE_API_KEY = ""
 
 # SECONDARY: Hugging Face Inference API (OPTIONAL - पर्यायी)
 # NOTE: Replace the placeholder below with your real Hugging Face API key and desired model ID
-HUGGINGFACE_API_KEY = "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"
+HUGGINGFACE_API_KEY = ""
 HF_MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
 
 # THIRD: Groq (FREE & FAST - विनामूल्य आणि जलद)
-GROQ_API_KEY = "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"
+GROQ_API_KEY = ""
 
 # ════════════════════════════════════════════════════════════════════════════════
 
@@ -1018,3 +1018,4 @@ if __name__ == '__main__':
     print("=" * 80)
     
     app.run(debug=True, port=5000, host='0.0.0.0')
+
