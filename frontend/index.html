@@ -1,0 +1,4397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawGuideAI - AI Legal Assistant</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-blue: #0A2540;
+            --secondary-blue: #003366;
+            --accent-gold: #C59D5F;
+            --accent-gold-hover: #b08d55;
+            --primary-teal: #06b6d4;
+            --primary-teal-hover: #0891b2;
+            --bg-light: #F8F9FA;
+            --border-color: #E0E0E0;
+            --text-dark: #1A1A1A;
+            --text-grey: #666666;
+            --font-serif: 'Merriweather', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--primary-blue);
+            color: #f0f0f0;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ============================================
+           AUTH PAGES STYLES (Login & Signup)
+           ============================================ */
+        .auth-page {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%);
+            animation: shimmer 20s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(50%, 50%) rotate(360deg);
+            }
+        }
+
+        .auth-header {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .auth-logo {
+            font-size: 28px;
+            font-weight: 300;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .auth-nav {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .auth-nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .auth-nav a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-nav a.active {
+            border-bottom: 2px solid white;
+            padding-bottom: 2px;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            padding: 40px 20px;
+        }
+
+        .auth-box {
+            background: rgba(10, 20, 40, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px 45px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-box h1 {
+            color: white;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(30, 50, 80, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .auth-box input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .auth-box input:focus {
+            outline: none;
+            background: rgba(30, 50, 80, 0.8);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .password-input {
+            padding-right: 45px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .auth-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .forgot-password:hover {
+            color: white;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .auth-link a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .auth-link a:hover {
+            color: #60a5fa;
+        }
+
+        .password-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .select-group {
+            margin-bottom: 18px;
+        }
+
+        .select-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .auth-box select {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(30, 50, 80, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .auth-box select:focus {
+            background: rgba(30, 50, 80, 0.8);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .avatar-picker {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .avatar-picker.visible {
+            display: block;
+        }
+
+        .avatar-picker-title {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .avatar-option {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s, background 0.2s;
+            text-align: center;
+        }
+
+        .avatar-option:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .avatar-option.selected {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.14);
+            box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25) inset;
+        }
+
+        .avatar-option img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 8px;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .avatar-option span {
+            display: block;
+            color: white;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        .avatar-option small {
+            display: block;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #86efac;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* ============================================
+           MAIN APP STYLES
+           ============================================ */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background-color: rgba(10, 37, 64, 0.85);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            background-color: transparent;
+            color: #fff;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            transition: background 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .new-chat-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            color: #999;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 2px;
+        }
+
+        .history-item {
+            position: relative;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            background: transparent;
+        }
+
+        .history-item.active {
+            background: transparent;
+        }
+
+        .history-title {
+            font-size: 0.88rem;
+            color: #fff;
+            font-weight: 400;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 20px;
+            flex: 1;
+            text-align: left;
+        }
+
+        .history-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-item:hover .history-actions,
+        .history-item.menu-open .history-actions {
+            display: flex;
+        }
+
+        .history-menu-btn {
+            width: 26px;
+            height: 26px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .history-menu-btn:hover {
+            background: rgba(15, 23, 42, 0.08);
+        }
+
+        .history-menu {
+            position: absolute;
+            top: 34px;
+            right: 8px;
+            min-width: 138px;
+            background: #ffffff;
+            border: 1px solid #dbe4f0;
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+            padding: 6px;
+            z-index: 30;
+            display: none;
+        }
+
+        .history-item.menu-open .history-menu {
+            display: block;
+        }
+
+        .history-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #0f172a;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-menu button:hover {
+            background: #f3f8ff;
+        }
+
+        .history-menu .danger {
+            color: #dc2626;
+        }
+
+        .history-empty {
+            color: #b7c2d0;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            padding: 4px 2px;
+        }
+
+        .user-profile {
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .user-plan {
+            font-size: 0.8rem;
+            color: var(--text-grey);
+        }
+
+        .logout-btn {
+            color: #ef4444;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .logout-btn:hover {
+            color: #dc2626;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: transparent;
+            position: relative;
+        }
+
+        .top-bar {
+            height: 60px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            background: rgba(10, 37, 64, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .divider {
+            color: #ddd;
+            font-weight: 300;
+            margin: 0 5px;
+        }
+
+        .page-title {
+            color: var(--text-grey);
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            color: var(--text-grey);
+            display: flex;
+            gap: 20px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .view-container {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* WELCOME SCREEN */
+        .welcome-center {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .welcome-icon {
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            width: 64px;
+            height: 64px;
+            line-height: 64px;
+            border-radius: 12px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-center h1 {
+            font-family: var(--font-serif);
+            color: #fff;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-family: var(--font-serif);
+            color: #ccc;
+            margin-bottom: 50px;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .f-icon {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .f-icon.blue {
+            background: #dbeafe;
+            color: #60a5fa;
+        }
+
+        .f-icon.gold {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .f-icon.green {
+            background: #dcfce7;
+            color: #84cc16;
+        }
+
+        .feature-card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+
+        .try-asking-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .try-asking-section h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .suggestion-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: left;
+            color: #f0f0f0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .suggestion-btn i {
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+        }
+
+        .suggestion-btn:hover {
+            border-color: var(--accent-gold);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .start-chat-btn {
+            background-color: var(--primary-teal);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-sans);
+        }
+
+        .start-chat-btn:hover {
+            background-color: var(--primary-teal-hover);
+        }
+
+        .footer-links {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* CHAT INTERFACE */
+        .chat-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 40px;
+            padding-bottom: 180px;
+            scroll-behavior: smooth;
+        }
+
+        .message-row {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 20px;
+            max-width: 850px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .message-row.user {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bot-avatar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px;
+        }
+
+        .message-content-wrapper {
+            flex: 1;
+            max-width: 75%;
+        }
+
+        .message-bubble {
+            padding: 16px 20px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            width: fit-content;
+            max-width: 100%;
+        }
+
+        .bot-bubble {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0 12px 12px 12px;
+            font-family: var(--font-serif);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-bubble {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px 12px 0 12px;
+            font-family: var(--font-sans);
+            padding: 12px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-left: auto;
+        }
+
+        .message-bubble ol,
+        .message-bubble ul {
+            margin: 10px 0 10px 25px;
+            padding: 0;
+        }
+
+        .message-bubble li {
+            margin-bottom: 8px;
+            padding-left: 5px;
+        }
+
+        .message-bubble strong {
+            font-weight: 700;
+            color: var(--secondary-blue);
+        }
+
+        /* INPUT AREA */
+        .input-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 37, 64, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .suggested-chips {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .suggested-chips button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-sans);
+            transition: background 0.2s;
+        }
+
+        .suggested-chips button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .input-box {
+            width: 100%;
+            max-width: 850px;
+            background: #020617;
+            /* Dark background from 2nd image */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .attach-icon {
+            color: #999;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 10px;
+            transform: rotate(45deg);
+        }
+
+        .input-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-family: var(--font-sans);
+            color: #fff;
+            background: transparent;
+        }
+
+        /* JSON RESPONSE STYLES */
+        .json-topic {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .legal-point {
+            margin-bottom: 20px;
+            background: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        .legal-point:hover {
+            background: transparent;
+        }
+
+        .point-header {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .point-number {
+            background: var(--primary-teal);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .point-title-text {
+            font-size: 1rem;
+        }
+
+        .point-desc {
+            color: #ddd;
+            font-size: 0.95rem;
+            padding-left: 32px;
+            line-height: 1.5;
+        }
+
+        .input-box input::placeholder {
+            color: #bbb;
+        }
+
+        .send-btn {
+            background: var(--primary-teal);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            font-size: 1rem;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-teal-hover);
+        }
+
+        .disclaimer {
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: #aaa;
+            text-align: center;
+        }
+
+        /* Responsive - Tablet */
+        @media (max-width: 1100px) {
+            .sidebar {
+                width: 220px;
+                padding: 15px;
+            }
+
+            .chat-scroll-area {
+                padding: 20px 24px;
+                padding-bottom: 180px;
+            }
+
+            .input-container {
+                padding: 16px 24px;
+            }
+
+            .input-box {
+                max-width: 100%;
+            }
+
+            .message-row {
+                max-width: 100%;
+            }
+
+            .message-content-wrapper {
+                max-width: 88%;
+            }
+
+            .welcome-center {
+                padding: 40px 16px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+            }
+
+            .suggestions-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .suggested-chips {
+                gap: 8px;
+            }
+
+            .suggested-chips button {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .top-bar {
+                padding: 0 20px;
+            }
+
+            .auth-header {
+                padding: 20px 30px;
+            }
+
+            .auth-nav {
+                gap: 25px;
+            }
+        }
+
+        /* Responsive - Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .suggestions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message-content-wrapper {
+                max-width: 100%;
+            }
+
+            .password-row {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-header {
+                padding: 15px 20px;
+            }
+
+            .auth-nav {
+                gap: 15px;
+            }
+
+            .chat-scroll-area {
+                padding: 15px 16px;
+                padding-bottom: 170px;
+            }
+
+            .input-container {
+                padding: 12px 16px;
+            }
+
+            .welcome-center {
+                padding: 30px 12px;
+            }
+
+            .welcome-center h1 {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 0.92rem;
+            }
+
+            .suggested-chips {
+                flex-wrap: wrap;
+            }
+
+            .top-bar {
+                padding: 0 16px;
+                height: 50px;
+            }
+
+            .select-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================
+           DARK THEME (MAIN APP) - ChatGPT Style
+           ============================================ */
+        #main-app {
+            color: #e0e0e0;
+        }
+
+        #main-app .app-container {
+            background: #0d0d0d;
+        }
+
+        #main-app .sidebar {
+            background: #171717;
+            border-right: 1px solid #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        #main-app .sidebar-section h3 {
+            color: #888;
+        }
+
+        #main-app .sidebar-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #main-app .new-chat-btn {
+            background: transparent;
+            color: #e0e0e0;
+            border: none;
+        }
+
+        #main-app .new-chat-btn:hover {
+            background: #2a2a2a;
+        }
+
+        #main-app .history-item {
+            background: transparent;
+            border: none;
+            margin-bottom: 2px;
+        }
+
+        #main-app .history-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        #main-app .history-item.active {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+        }
+
+        #main-app .history-title {
+            color: #d0d0d0;
+        }
+
+        #main-app .history-empty,
+        #main-app .user-plan,
+        #main-app .page-title,
+        #main-app .header-actions,
+        #main-app .footer-links,
+        #main-app .disclaimer {
+            color: #777;
+        }
+
+        #main-app .history-menu {
+            background: #1e1e1e;
+            border-color: #333;
+        }
+
+        #main-app .history-menu button {
+            color: #d0d0d0;
+        }
+
+        #main-app .history-menu button:hover {
+            background: #2a2a2a;
+        }
+
+        #main-app .history-menu .danger {
+            color: #ef4444;
+        }
+
+        #main-app .user-profile {
+            border-top: 1px solid #2a2a2a;
+        }
+
+        #main-app .user-name {
+            color: #e0e0e0;
+        }
+
+        #main-app .logo-text,
+        #main-app .welcome-center h1,
+        #main-app .feature-card h3,
+        #main-app .try-asking-section h3,
+        #main-app .point-header,
+        #main-app .json-topic,
+        #main-app .point-title-text {
+            color: #ffffff;
+        }
+
+        #main-app .top-bar {
+            background: #171717;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        #main-app .logo-icon {
+            background: #ffffff;
+            color: #0d0d0d;
+        }
+
+        #main-app .divider {
+            color: #555;
+        }
+
+        #main-app .subtitle,
+        #main-app .feature-card p,
+        #main-app .point-desc {
+            color: #aaa;
+        }
+
+        #main-app .welcome-icon {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        #main-app .feature-card,
+        #main-app .try-asking-section {
+            background: #1a1a1a;
+            border-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        #main-app .feature-card:hover {
+            border-color: #3a3a3a;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #main-app .suggestion-btn,
+        #main-app .suggested-chips button {
+            background: #1a1a1a;
+            border-color: #2a2a2a;
+            color: #d0d0d0;
+        }
+
+        #main-app .suggestion-btn:hover,
+        #main-app .suggested-chips button:hover {
+            background: #252525;
+            border-color: #444;
+        }
+
+        #main-app .start-chat-btn {
+            background: #ffffff;
+            color: #0d0d0d;
+        }
+
+        #main-app .start-chat-btn:hover {
+            background: #e0e0e0;
+        }
+
+        #main-app .main-content {
+            background: transparent;
+        }
+
+        #main-app .input-container {
+            background: #0d0d0d;
+            border-top: none;
+        }
+
+        #main-app .input-box {
+            background: #2a2a2a;
+            border-color: #3a3a3a;
+            box-shadow: none;
+        }
+
+        #main-app .input-box input {
+            color: #ffffff;
+        }
+
+        #main-app .input-box input::placeholder,
+        #main-app .attach-icon {
+            color: #777;
+        }
+
+        #main-app .send-btn {
+            background: #ffffff;
+            color: #0d0d0d;
+        }
+
+        #main-app .send-btn:hover {
+            background: #e0e0e0;
+        }
+
+        #main-app .bot-bubble {
+            background: transparent;
+            color: #e0e0e0;
+            border: none;
+            box-shadow: none;
+            padding-left: 0;
+        }
+
+        #main-app .user-bubble {
+            background: #2a2a2a;
+            color: #ffffff;
+            border-color: #3a3a3a;
+        }
+
+        #main-app .message-bubble strong {
+            color: #ffffff;
+        }
+
+        #main-app .message-bubble ol,
+        #main-app .message-bubble ul {
+            color: #ccc;
+        }
+
+        #main-app .f-icon.blue {
+            background: #1a2a3a;
+            color: #60a5fa;
+        }
+
+        #main-app .f-icon.gold {
+            background: #2a2210;
+            color: #f59e0b;
+        }
+
+        #main-app .f-icon.green {
+            background: #1a2a1a;
+            color: #84cc16;
+        }
+
+        #main-app .logout-btn {
+            color: #ef4444;
+        }
+
+        /* ============================================
+           NEW FEATURES STYLES
+           ============================================ */
+
+        /* Typing indicator */
+        .typing-dots {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 0;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #60a5fa;
+            animation: typingBounce 1.2s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+
+        /* Message action buttons */
+        .message-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .message-row:hover .message-actions {
+            opacity: 1;
+        }
+
+        .msg-action-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #aaa;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .msg-action-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .msg-action-btn.speaking {
+            color: #60a5fa;
+            border-color: #60a5fa;
+        }
+
+        /* Voice input button */
+        .voice-btn {
+            background: transparent;
+            border: none;
+            color: #777;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .voice-btn:hover {
+            color: #60a5fa;
+        }
+
+        .voice-btn.recording {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Theme toggle */
+        .theme-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: color 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            color: #fff;
+        }
+
+        /* Document status badge */
+        .doc-status-badge {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .doc-status-badge.active {
+            display: flex;
+        }
+
+        .doc-status-badge:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .doc-status-badge:hover .doc-badge-text::after {
+            content: ' (click to remove)';
+        }
+
+        /* Character counter */
+        .char-counter {
+            font-size: 0.7rem;
+            color: #555;
+            padding: 0 8px;
+            white-space: nowrap;
+        }
+
+        .char-counter.warn {
+            color: #f59e0b;
+        }
+
+        .char-counter.limit {
+            color: #ef4444;
+        }
+
+        /* Legal topics panel */
+        .legal-topics-panel {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
+            padding: 16px 40px;
+            z-index: 20;
+        }
+
+        .legal-topics-panel.open {
+            display: block;
+        }
+
+        .legal-topics-title {
+            font-size: 0.75rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .legal-topics-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .topic-chip {
+            background: #252525;
+            border: 1px solid #333;
+            color: #ccc;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .topic-chip:hover {
+            background: #2a2a2a;
+            border-color: #60a5fa;
+            color: #60a5fa;
+        }
+
+        /* Export button */
+        .export-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: color 0.2s;
+        }
+
+        .export-btn:hover {
+            color: #fff;
+        }
+
+        /* Mobile sidebar toggle */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+            }
+
+            .sidebar.mobile-open {
+                display: flex !important;
+                position: fixed;
+                z-index: 100;
+                top: 0;
+                left: 0;
+                height: 100vh;
+            }
+
+            .sidebar-overlay {
+                display: block !important;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        /* Light theme */
+        body.light-theme {
+            background-color: #f8fafc;
+        }
+
+        body.light-theme #main-app .app-container {
+            background: #f8fafc;
+        }
+
+        body.light-theme #main-app .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: 4px 0 24px rgba(15, 23, 42, 0.02);
+        }
+
+        body.light-theme #main-app .sidebar-section h3 {
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        body.light-theme #main-app .new-chat-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.18);
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .new-chat-btn:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.28);
+        }
+
+        body.light-theme #main-app .history-title {
+            color: #334155;
+            font-weight: 500;
+        }
+
+        body.light-theme #main-app .history-item {
+            border-left: 3px solid transparent;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .history-item:hover {
+            background: #f1f5f9;
+        }
+
+        body.light-theme #main-app .history-item.active {
+            background: #e0e7ff;
+            border-left-color: #4f46e5;
+        }
+
+        body.light-theme #main-app .history-item.active .history-title {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        body.light-theme #main-app .top-bar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        body.light-theme #main-app .logo-text {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        body.light-theme #main-app .logo-icon {
+            background: #0f172a;
+            color: #fff;
+            border-radius: 6px;
+        }
+
+        body.light-theme #main-app .input-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e2e8f0;
+            padding: 20px 30px;
+        }
+
+        body.light-theme #main-app .input-box {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .input-box:focus-within {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        body.light-theme #main-app .input-box input {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .input-box input::placeholder {
+            color: #94a3b8;
+        }
+
+        body.light-theme #main-app .send-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .send-btn:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+            transform: scale(1.05);
+            box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        body.light-theme #main-app .bot-bubble {
+            background-color: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #1e293b;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+        }
+
+        body.light-theme #main-app .user-bubble {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.12);
+            border-radius: 16px;
+            border-top-right-radius: 4px;
+        }
+
+        body.light-theme #main-app .bot-bubble strong {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .user-bubble strong {
+            color: #ffffff;
+        }
+
+        body.light-theme #main-app .feature-card {
+            background: #ffffff;
+            border-color: #e2e8f0;
+        }
+
+        body.light-theme #main-app .feature-card h3 {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .feature-card p {
+            color: #475569;
+        }
+
+        body.light-theme #main-app .try-asking-section {
+            background: #ffffff;
+            border-color: #e2e8f0;
+        }
+
+        body.light-theme #main-app .try-asking-section h3 {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .suggestion-btn {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .suggestion-btn:hover {
+            background: #e0e7ff;
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+
+        body.light-theme #main-app .suggested-chips button {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #475569;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 8px 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .suggested-chips button:hover {
+            background: #f8fafc;
+            border-color: #4f46e5;
+            color: #4f46e5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.08);
+        }
+
+        body.light-theme #main-app .welcome-center h1 {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .subtitle {
+            color: #475569;
+        }
+
+        body.light-theme #main-app .user-name {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .user-profile {
+            border-top: 1px solid #e2e8f0;
+        }
+
+        body.light-theme #main-app .header-actions button {
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        body.light-theme #main-app .header-actions button:hover {
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .disclaimer {
+            color: #94a3b8;
+        }
+
+        body.light-theme #main-app .legal-topics-panel {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        body.light-theme #main-app .topic-chip {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #475569;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .topic-chip:hover {
+            background: #e0e7ff;
+            border-color: #4f46e5;
+            color: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        body.light-theme #main-app .msg-action-btn {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        body.light-theme #main-app .msg-action-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .history-menu {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+        }
+
+        body.light-theme #main-app .history-menu button {
+            color: #334155;
+        }
+
+        body.light-theme #main-app .history-menu button:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        body.light-theme #main-app .history-menu .danger {
+            color: #ef4444;
+        }
+
+        body.light-theme #main-app .history-menu .danger:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        body.light-theme #main-app .point-header {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        body.light-theme #main-app .point-desc {
+            color: #475569;
+        }
+
+        body.light-theme #main-app .json-topic {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        body.light-theme #main-app .theme-toggle-btn {
+            color: #64748b;
+        }
+
+        body.light-theme .theme-toggle-btn:hover {
+            color: #0f172a;
+        }
+
+        body.light-theme .export-btn {
+            color: #64748b;
+        }
+
+        body.light-theme .export-btn:hover {
+            color: #0f172a;
+        }
+
+        body.light-theme .char-counter {
+            color: #94a3b8;
+        }
+
+        body.light-theme #main-app .start-chat-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        body.light-theme #main-app .start-chat-btn:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+        }
+
+        body.light-theme #particle-canvas {
+            opacity: 0.1;
+        }
+
+        body.light-theme #main-app .message-bubble ol,
+        body.light-theme #main-app .message-bubble ul {
+            color: inherit;
+        }
+
+        /* ============================================
+           LANDING PAGE STYLES
+           ============================================ */
+        .landing-page {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-family: var(--font-sans);
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+            scroll-behavior: smooth;
+        }
+
+        .landing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .landing-logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-badge {
+            background-color: #0f172a;
+            color: white;
+            font-family: var(--font-serif);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .landing-nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .landing-nav a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .landing-nav a:hover {
+            color: #0f172a;
+        }
+
+        .landing-auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .landing-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .landing-btn.outline {
+            background-color: transparent;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .landing-btn.outline:hover {
+            border-color: #0f172a;
+            color: #0f172a;
+            background-color: rgba(15, 23, 42, 0.02);
+        }
+
+        .landing-btn.filled {
+            background-color: #0f172a;
+            border: 1px solid #0f172a;
+            color: white;
+        }
+
+        .landing-btn.filled:hover {
+            background-color: #1e293b;
+            border-color: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 80px 20px 40px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid #c7d2fe;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4f46e5;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+            animation: pulse-badge 1.6s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(79, 70, 229, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+            }
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-title .highlight {
+            color: #4f46e5;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+
+        .hero-btn {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-btn.filled {
+            background-color: #4f46e5;
+            border: 1px solid #4f46e5;
+            color: white;
+        }
+
+        .hero-btn.filled:hover {
+            background-color: #4338ca;
+            border-color: #4338ca;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .hero-btn.outline {
+            background-color: white;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .hero-btn.outline:hover {
+            border-color: #0f172a;
+            color: #0f172a;
+            background-color: rgba(15, 23, 42, 0.02);
+            transform: translateY(-1px);
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .hero-badges span {
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .hero-badges i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        /* Simulated Chat Window */
+        .chat-demo-section {
+            padding: 20px 20px 60px;
+        }
+
+        .chat-demo-container {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .chat-demo-window {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+        }
+
+        .window-header {
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .window-dots .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .window-dots .dot.red {
+            background-color: #ef4444;
+        }
+
+        .window-dots .dot.yellow {
+            background-color: #f59e0b;
+        }
+
+        .window-dots .dot.green {
+            background-color: #10b981;
+        }
+
+        .window-title {
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            pointer-events: none;
+        }
+
+        .window-body {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .demo-msg {
+            display: flex;
+            gap: 14px;
+            max-width: 85%;
+        }
+
+        .demo-msg.bot {
+            align-self: flex-start;
+        }
+
+        .demo-msg.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .demo-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            color: #475569;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .demo-avatar.user-av {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .demo-bubble {
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .demo-msg.bot .demo-bubble {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            border-top-left-radius: 4px;
+            font-family: var(--font-serif);
+        }
+
+        .demo-msg.user .demo-bubble {
+            background-color: #0f172a;
+            color: white;
+            border-top-right-radius: 4px;
+            font-family: var(--font-sans);
+        }
+
+        .legal-tag {
+            background-color: rgba(79, 70, 229, 0.08);
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            color: #4f46e5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font-sans);
+        }
+
+        .demo-chips {
+            display: flex;
+            gap: 10px;
+            margin-left: 48px;
+            flex-wrap: wrap;
+        }
+
+        .demo-chip {
+            background-color: white;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            color: #4f46e5;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .demo-chip:hover {
+            border-color: #4f46e5;
+            background-color: rgba(79, 70, 229, 0.02);
+            transform: translateY(-1px);
+        }
+
+        /* General Sections */
+        .landing-section {
+            padding: 80px 8%;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            color: #475569;
+            font-size: 16px;
+        }
+
+        /* Features grid */
+        .features-grid-landing {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card-landing {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.2s;
+        }
+
+        .feature-card-landing:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+        }
+
+        .feat-icon-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .feat-icon-circle.blue-bg {
+            background-color: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .feat-icon-circle.gold-bg {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .feat-icon-circle.green-bg {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .feat-icon-circle.red-bg {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .feat-icon-circle.sky-bg {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .feat-icon-circle.teal-bg {
+            background-color: #ccfbf1;
+            color: #0d9488;
+        }
+
+        .feature-card-landing h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .feature-card-landing p {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        /* How it works steps */
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .step-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 4px solid #f8fafc;
+        }
+
+        .step-item h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .step-item p {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background-color: #e2e8f0;
+            z-index: 1;
+        }
+
+        /* Legal Topics Grid */
+        .topics-grid-landing {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .topic-btn-landing {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-sans);
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .topic-btn-landing i {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .topic-btn-landing:hover {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            background-color: rgba(79, 70, 229, 0.01);
+            transform: translateY(-1px);
+        }
+
+        .topic-btn-landing:hover i {
+            color: #4f46e5;
+        }
+
+        /* Know Your Rights Section */
+        .kyr-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .kyr-card {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .kyr-card:hover {
+            border-color: #5B4FE8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(91, 79, 232, 0.05);
+        }
+
+        .kyr-icon {
+            font-size: 28px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .kyr-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-family: var(--font-sans);
+        }
+
+        .kyr-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Modal Styles */
+        .kyr-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .kyr-modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .kyr-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .kyr-modal-backdrop.active .kyr-modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .kyr-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #64748b;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .kyr-modal-close:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .kyr-modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .kyr-modal-rights {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .kyr-modal-rights li {
+            padding-left: 24px;
+            position: relative;
+            margin-bottom: 12px;
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .kyr-modal-rights li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .kyr-modal-law {
+            background: #f8fafc;
+            border-left: 3px solid #5B4FE8;
+            padding: 12px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .kyr-modal-law strong {
+            color: #0f172a;
+        }
+
+        .kyr-btn {
+            background-color: #5B4FE8;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 8px;
+        }
+
+        .kyr-btn:hover {
+            background-color: #4B40D8;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .kyr-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kyr-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CTA Banner */
+        .cta-banner-section {
+            padding: 60px 8%;
+        }
+
+        .cta-banner {
+            background-color: #0f172a;
+            color: white;
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        .cta-banner h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .cta-banner p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .cta-banner-btn {
+            background-color: white;
+            color: #0f172a;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-banner-btn:hover {
+            background-color: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        .landing-footer {
+            border-top: 1px solid #e2e8f0;
+            padding: 40px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            background-color: #f8fafc;
+        }
+
+        .footer-left {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links-landing {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links-landing a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links-landing a:hover {
+            color: #0f172a;
+        }
+
+        .footer-disclaimer {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Responsive adjustments for Landing Page */
+        @media (max-width: 1024px) {
+            .features-grid-landing {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .topics-grid-landing {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .landing-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .landing-nav {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 15px;
+            }
+
+            .features-grid-landing {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .steps-container::before {
+                display: none;
+            }
+
+            .topics-grid-landing {
+                grid-template-columns: 1fr;
+            }
+
+            .landing-footer {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links-landing {
+                justify-content: center;
+            }
+        }
+
+        /* ============================================
+           SPLIT SCREEN AUTH PAGE STYLES
+           ============================================ */
+        .split-auth-page {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            background-color: white;
+            font-family: var(--font-sans);
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-left-col {
+            flex: 1.1;
+            background-color: #f7f6f2;
+            /* Beige color matching screenshot */
+            display: flex;
+            flex-direction: column;
+            padding: 50px 8%;
+            justify-content: space-between;
+            position: relative;
+            color: #0f172a;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .auth-left-header {
+            margin-bottom: 30px;
+        }
+
+        .auth-left-logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .auth-left-content {
+            margin-top: auto;
+            margin-bottom: auto;
+            max-width: 520px;
+        }
+
+        .auth-left-tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .auth-left-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .auth-left-subtitle {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .auth-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .auth-card-item {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
+        }
+
+        .auth-card-icon {
+            font-size: 18px;
+            color: #4f46e5;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .auth-card-item span {
+            font-size: 13.5px;
+            color: #334155;
+            line-height: 1.4;
+        }
+
+        .auth-card-item strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .auth-left-footer {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 30px;
+        }
+
+        .auth-left-footer a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-left-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-right-col {
+            flex: 0.9;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 8%;
+            color: #0f172a;
+            position: relative;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .auth-right-col::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .auth-right-col::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        .auth-right-col::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .auth-right-col::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .auth-right-container {
+            width: 100%;
+            max-width: 400px;
+            margin: auto 0;
+        }
+
+        .auth-right-header {
+            margin-bottom: 25px;
+        }
+
+        .auth-right-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-right-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .auth-right-header a {
+            color: #4f46e5;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .auth-right-header a:hover {
+            text-decoration: underline;
+        }
+
+        .social-login-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            background-color: white;
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .social-btn img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .social-btn:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+
+        .auth-divider {
+            text-align: center;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .auth-divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background-color: #e2e8f0;
+            z-index: 1;
+        }
+
+        .auth-divider span {
+            position: relative;
+            z-index: 2;
+            background-color: white;
+            padding: 0 16px;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .new-input-group {
+            margin-bottom: 18px;
+        }
+
+        .new-input-group label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .label-row label {
+            margin-bottom: 0;
+        }
+
+        .forgot-link {
+            font-size: 13px;
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .new-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .new-input-wrapper .input-icon {
+            position: absolute;
+            left: 16px;
+            color: #94a3b8;
+            font-size: 15px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .new-input-wrapper input,
+        .new-input-wrapper select {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #2e2e2e;
+            color: white;
+            transition: all 0.2s;
+            outline: none;
+            font-family: var(--font-sans);
+        }
+
+        .new-input-wrapper input::placeholder {
+            color: #64748b;
+        }
+
+        .new-input-wrapper input:focus,
+        .new-input-wrapper select:focus {
+            border-color: #4f46e5;
+            background-color: #242424;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .new-input-wrapper .password-input {
+            padding-right: 60px;
+        }
+
+        .new-toggle-password {
+            position: absolute;
+            right: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 34px;
+            border: 1.5px solid #475569;
+            border-radius: 6px;
+            background-color: #2e2e2e;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+
+        .new-toggle-password:hover {
+            color: white;
+            border-color: #cbd5e1;
+        }
+
+        .auth-options-row {
+            margin-bottom: 22px;
+        }
+
+        .new-remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .new-remember-me input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1.5px solid #cbd5e1;
+        }
+
+        .auth-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            color: #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .auth-submit-btn:hover {
+            background-color: #0f172a;
+            border-color: #0f172a;
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+        }
+
+        .captcha-terms {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 22px 0 16px;
+        }
+
+        .captcha-terms a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .captcha-terms a:hover {
+            text-decoration: underline;
+        }
+
+        .divider-line {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 18px 0;
+        }
+
+        .auth-security-footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .auth-security-footer span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .auth-security-footer i {
+            color: #10b981;
+            font-size: 13px;
+        }
+
+        .auth-top-dot-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #2d2d2d;
+            border: 1.5px solid #2d2d2d;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .auth-top-dot-menu:hover {
+            background: #3d3d3d;
+            border-color: #3d3d3d;
+        }
+
+        /* Responsive Split Auth Page */
+        @media (max-width: 900px) {
+            .split-auth-page {
+                flex-direction: column;
+            }
+
+            .auth-left-col {
+                display: none;
+                /* Hide left column on mobile to keep form simple and clean */
+            }
+
+            .auth-right-col {
+                flex: 1;
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+
+
+<body class="light-theme">
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ============================================
+         LANDING PAGE
+         ============================================ -->
+    <div id="landing-page" class="landing-page">
+        <!-- sticky header -->
+        <header class="landing-header">
+            <div class="landing-logo">
+                <span class="logo-badge">LG</span> LawGuideAI
+            </div>
+            <nav class="landing-nav">
+                <a href="#features">Features</a>
+                <a href="#topics">Legal topics</a>
+                <a href="#rights">Know Your Rights</a>
+                <a href="#about">About</a>
+            </nav>
+            <div class="landing-auth-buttons">
+                <button class="landing-btn outline" onclick="showPage('login')">Sign in</button>
+                <button class="landing-btn filled" onclick="showPage('signup')">Get started</button>
+            </div>
+        </header>
+
+        <!-- hero section -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="ai-badge">
+                    <span class="pulse-dot"></span> Powered by AI - Indian law
+                </div>
+                <h1 class="hero-title">Understand Indian law,<br><span class="highlight">without a law degree.</span>
+                </h1>
+                <p class="hero-subtitle">Ask any legal question in plain language. Get instant answers, case citations,
+                    and step-by-step guidance — free.</p>
+
+                <div class="hero-buttons-group">
+                    <button class="hero-btn filled" onclick="startGuestChat()">Start chatting free <i
+                            class="fa-solid fa-arrow-right"></i></button>
+                    <button class="hero-btn outline"
+                        onclick="document.getElementById('features').scrollIntoView({ behavior: 'smooth' })">See how it
+                        works</button>
+                </div>
+
+                <div class="hero-badges">
+                    <span><i class="fa-solid fa-circle-check"></i> No signup required</span>
+                    <span><i class="fa-solid fa-circle-check"></i> IPC, CrPC, RTI & more</span>
+                    <span><i class="fa-solid fa-circle-check"></i> Hindi & Marathi supported</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- chat demo window -->
+        <section class="chat-demo-section">
+            <div class="chat-demo-container">
+                <div class="chat-demo-window">
+                    <div class="window-header">
+                        <div class="window-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="window-title">LawGuideAI — New conversation</div>
+                    </div>
+                    <div class="window-body">
+                        <!-- message 1 -->
+                        <div class="demo-msg bot">
+                            <div class="demo-avatar">LG</div>
+                            <div class="demo-bubble">
+                                Hello! I'm LawGuideAI. Ask me anything about Indian law — I'll give you clear, reliable
+                                answers.
+                            </div>
+                        </div>
+                        <!-- message 2 -->
+                        <div class="demo-msg user">
+                            <div class="demo-avatar user-av">U</div>
+                            <div class="demo-bubble">
+                                What can police do if they arrest me without a warrant?
+                            </div>
+                        </div>
+                        <!-- message 3 -->
+                        <div class="demo-msg bot">
+                            <div class="demo-avatar">LG</div>
+                            <div class="demo-bubble">
+                                Under <span class="legal-tag"><i class="fa-solid fa-scale-balanced"></i> Article
+                                    22</span> of the Constitution, you must be informed of the reason for arrest,
+                                allowed to consult a lawyer, and produced before a magistrate within 24 hours. Police
+                                cannot detain you beyond this without judicial approval. <span class="legal-tag"><i
+                                        class="fa-solid fa-book"></i> CrPC §57</span>
+                            </div>
+                        </div>
+                        <!-- suggested chips -->
+                        <div class="demo-chips">
+                            <button class="demo-chip" onclick="startGuestChatWithQuestion('How to apply for bail?')">How
+                                to apply for bail?</button>
+                            <button class="demo-chip"
+                                onclick="startGuestChatWithQuestion('Can I file a complaint against police?')">Can I
+                                file a complaint against police?</button>
+                            <button class="demo-chip" onclick="startGuestChatWithQuestion('Find a lawyer nearby')">Find
+                                a lawyer nearby</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- features grid -->
+        <section id="features" class="landing-section features-section">
+            <div class="section-header">
+                <span class="section-tag">WHAT YOU GET</span>
+                <h2>Everything you need to navigate the law</h2>
+                <p>No jargon, no confusion — just clear legal guidance.</p>
+            </div>
+            <div class="features-grid-landing">
+                <div class="feature-card-landing">
+                    <div class="feat-icon-circle blue-bg"><i class="fa-regular fa-comments"></i></div>
+                    <h3>Instant answers</h3>
+                    <p>Ask any question, get a clear response in seconds based on current Indian law.</p>
+                </div>
+                <div class="feature-card-landing">
+                    <div class="feat-icon-circle gold-bg"><i class="fa-regular fa-file-lines"></i></div>
+                    <h3>Case citations</h3>
+                    <p>Responses backed by Supreme Court and High Court judgements and statutes.</p>
+                </div>
+                <div class="feature-card-landing">
+                    <div class="feat-icon-circle green-bg"><i class="fa-solid fa-language"></i></div>
+                    <h3>Multilingual</h3>
+                    <p>Ask in English, Hindi, or Marathi — get answers in your preferred language.</p>
+                </div>
+                <div class="feature-card-landing">
+                    <div class="feat-icon-circle red-bg"><i class="fa-regular fa-folder-open"></i></div>
+                    <h3>Document review</h3>
+                    <p>Upload FIR, contracts, or legal notices — AI flags key clauses and risks.</p>
+                </div>
+                <div class="feature-card-landing">
+                    <div class="feat-icon-circle sky-bg"><i class="fa-solid fa-user-tie"></i></div>
+                    <h3>Find a lawyer</h3>
+                    <p>Location-aware directory of advocates and legal aid centres across India.</p>
+                </div>
+                <div class="feature-card-landing">
+                    <div class="feat-icon-circle teal-bg"><i class="fa-regular fa-file-pdf"></i></div>
+                    <h3>Export as PDF</h3>
+                    <p>Save any conversation as a PDF for offline reference or sharing with counsel.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- how it works -->
+        <section class="landing-section steps-section">
+            <div class="section-header">
+                <span class="section-tag">HOW IT WORKS</span>
+                <h2>Three steps to legal clarity</h2>
+            </div>
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Ask your question</h3>
+                    <p>Type your legal situation in plain language — no legal terms needed.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>AI analyses the law</h3>
+                    <p>LawGuideAI matches your query to relevant acts, sections, and precedents.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Get clear guidance</h3>
+                    <p>Receive a structured answer with citations, steps, and follow-up options.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- legal topics -->
+        <section id="topics" class="landing-section topics-section">
+            <div class="section-header">
+                <span class="section-tag">LEGAL TOPICS</span>
+                <h2>Explore by area of law</h2>
+            </div>
+            <div class="topics-grid-landing">
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('What are the laws and procedures under Criminal Law in India?')">
+                    <i class="fa-solid fa-handcuffs"></i> Criminal law
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('Explain property rights and land laws in India.')">
+                    <i class="fa-solid fa-house-chimney"></i> Property & land
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('What are labour and employment laws in India?')">
+                    <i class="fa-solid fa-briefcase"></i> Labour & employment
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('Explain family and marriage laws in India.')">
+                    <i class="fa-solid fa-people-roof"></i> Family & marriage
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('What are consumer rights under Indian law?')">
+                    <i class="fa-solid fa-cart-shopping"></i> Consumer rights
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('What are laws regarding banking, loans and finance in India?')">
+                    <i class="fa-solid fa-coins"></i> Banking & loans
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('How to file an RTI? What are government schemes laws?')">
+                    <i class="fa-solid fa-landmark-flag"></i> RTI & govt. schemes
+                </button>
+                <button class="topic-btn-landing"
+                    onclick="startGuestChatWithQuestion('Explain traffic laws, motor vehicle act, and driving offences in India.')">
+                    <i class="fa-solid fa-car"></i> Traffic & motor
+                </button>
+            </div>
+        </section>
+
+        <!-- Know Your Rights Section -->
+        <section id="rights" class="landing-section">
+            <div class="section-header" style="text-align: center; margin-bottom: 40px;">
+                <span class="section-tag"
+                    style="background: rgba(91, 79, 232, 0.1); color: #5B4FE8; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px;">EMPOWER
+                    YOURSELF</span>
+                <h2 style="font-size: 32px; color: #0A2540; margin-top: 16px;">Know Your Rights in India</h2>
+                <p style="color: #64748b; font-size: 16px; margin-top: 8px;">Click any situation to get instant legal
+                    guidance</p>
+            </div>
+
+            <div class="kyr-grid">
+                <!-- Card 1 -->
+                <div class="kyr-card" onclick="openKyrModal(0)">
+                    <div class="kyr-icon">🚔</div>
+                    <div class="kyr-title">Police Arrest</div>
+                    <div class="kyr-subtitle">Arrested without warrant?</div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="kyr-card" onclick="openKyrModal(1)">
+                    <div class="kyr-icon">🏠</div>
+                    <div class="kyr-title">Tenant Rights</div>
+                    <div class="kyr-subtitle">Landlord harassing you?</div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="kyr-card" onclick="openKyrModal(2)">
+                    <div class="kyr-icon">👷</div>
+                    <div class="kyr-title">Workplace Rights</div>
+                    <div class="kyr-subtitle">Facing harassment at work?</div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="kyr-card" onclick="openKyrModal(3)">
+                    <div class="kyr-icon">📱</div>
+                    <div class="kyr-title">Cyber Crime</div>
+                    <div class="kyr-subtitle">Victim of online fraud?</div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="kyr-card" onclick="openKyrModal(4)">
+                    <div class="kyr-icon">🏥</div>
+                    <div class="kyr-title">Medical Negligence</div>
+                    <div class="kyr-subtitle">Hospital refused treatment?</div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="kyr-card" onclick="openKyrModal(5)">
+                    <div class="kyr-icon">📜</div>
+                    <div class="kyr-title">RTI Filing</div>
+                    <div class="kyr-subtitle">Want to file an RTI?</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Know Your Rights Modal -->
+        <div id="kyr-modal" class="kyr-modal-backdrop">
+            <div class="kyr-modal-content">
+                <button class="kyr-modal-close" onclick="closeKyrModal()">&times;</button>
+                <div id="kyr-modal-title" class="kyr-modal-title"></div>
+                <ul id="kyr-modal-rights" class="kyr-modal-rights"></ul>
+                <div id="kyr-modal-law" class="kyr-modal-law"></div>
+                <button id="kyr-modal-btn" class="kyr-btn">Ask LawGuideAI about this <i
+                        class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <script>
+            const kyrData = [
+                {
+                    title: "🚔 Police Arrest",
+                    rights: [
+                        "Right to know the grounds of arrest",
+                        "Right to be produced before a magistrate within 24 hours",
+                        "Right to consult a legal practitioner",
+                        "Right to inform a relative or friend"
+                    ],
+                    law: "<strong>Relevant Law:</strong> Article 22 of the Constitution, Sections 41-60 of CrPC",
+                    prompt: "I want to know my rights regarding a police arrest without a warrant and the relevant CrPC laws."
+                },
+                {
+                    title: "🏠 Tenant Rights",
+                    rights: [
+                        "Right against unfair eviction without notice",
+                        "Right to essential services (water, electricity)",
+                        "Right to privacy (landlord can't enter without notice)",
+                        "Right to refund of security deposit"
+                    ],
+                    law: "<strong>Relevant Law:</strong> Rent Control Act of respective states, Transfer of Property Act",
+                    prompt: "My landlord is harassing me and threatening eviction. What are my rights as a tenant in India?"
+                },
+                {
+                    title: "👷 Workplace Rights",
+                    rights: [
+                        "Right to safe working environment",
+                        "Protection against sexual harassment (POSH)",
+                        "Right to timely payment of wages",
+                        "Right to equal pay for equal work"
+                    ],
+                    law: "<strong>Relevant Law:</strong> POSH Act 2013, Payment of Wages Act, Minimum Wages Act",
+                    prompt: "I am facing workplace harassment and unfair treatment. What are my workplace rights and how do I report it under Indian law?"
+                },
+                {
+                    title: "📱 Cyber Crime",
+                    rights: [
+                        "Right to register a cyber crime complaint locally or online",
+                        "Right to zero FIR in any police station",
+                        "Right to privacy and data protection",
+                        "Protection against cyber bullying and stalking"
+                    ],
+                    law: "<strong>Relevant Law:</strong> Information Technology Act 2000 (Section 66, 67)",
+                    prompt: "I am a victim of online fraud/cybercrime. How can I file a complaint online and what acts protect me?"
+                },
+                {
+                    title: "🏥 Medical Negligence",
+                    rights: [
+                        "Right to emergency medical care",
+                        "Right to full information about diagnosis and costs",
+                        "Right to obtain medical records",
+                        "Right to confidentiality and second opinion"
+                    ],
+                    law: "<strong>Relevant Law:</strong> Consumer Protection Act 2019, Indian Medical Council Regulations",
+                    prompt: "A hospital refused treatment and committed medical negligence. What legal actions can I take and what laws apply?"
+                },
+                {
+                    title: "📜 RTI Filing",
+                    rights: [
+                        "Right to request information from any public authority",
+                        "Right to inspect government documents and records",
+                        "Right to receive response within 30 days",
+                        "Right to appeal if information is denied"
+                    ],
+                    law: "<strong>Relevant Law:</strong> Right to Information (RTI) Act, 2005",
+                    prompt: "I want to file an RTI application. Please guide me step-by-step on my rights and the procedure under the RTI Act 2005."
+                }
+            ];
+
+            function openKyrModal(index) {
+                const data = kyrData[index];
+                document.getElementById("kyr-modal-title").innerHTML = data.title;
+
+                const rightsHtml = data.rights.map(right => "<li>" + right + "</li>").join("");
+                document.getElementById("kyr-modal-rights").innerHTML = rightsHtml;
+
+                document.getElementById("kyr-modal-law").innerHTML = data.law;
+
+                const btn = document.getElementById("kyr-modal-btn");
+                btn.onclick = function () {
+                    closeKyrModal();
+                    startGuestChatWithQuestion(data.prompt);
+                };
+
+                document.getElementById("kyr-modal").classList.add("active");
+            }
+
+            function closeKyrModal() {
+                document.getElementById("kyr-modal").classList.remove("active");
+            }
+
+            // Close modal when clicking outside
+            document.getElementById("kyr-modal").addEventListener("click", function (e) {
+                if (e.target === this) {
+                    closeKyrModal();
+                }
+            });
+        </script>
+
+        <!-- cta banner -->
+        <section class="cta-banner-section">
+            <div class="cta-banner">
+                <h2>Ready to understand your rights?</h2>
+                <p>Free to use • No account needed • Available in 3 languages</p>
+                <button class="cta-banner-btn" onclick="startGuestChat()">Start chatting free <i
+                        class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </section>
+
+        <!-- footer -->
+        <footer class="landing-footer">
+            <div class="footer-left">
+                <span class="logo-badge">LG</span> LawGuideAI
+            </div>
+            <div class="footer-links-landing">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-disclaimer">
+                General info only • Not legal advice
+            </div>
+        </footer>
+    </div>
+
+    <!-- ============================================
+         LOGIN PAGE
+         ============================================ -->
+    <div id="login-page" class="split-auth-page hidden">
+        <!-- Left Column: Beige side with info -->
+        <div class="auth-left-col">
+            <div class="auth-left-header">
+                <div class="auth-left-logo" onclick="showPage('landing')">
+                    <span class="logo-badge">LG</span> LawGuideAI
+                </div>
+            </div>
+
+            <div class="auth-left-content">
+                <span class="auth-left-tag">INDIAN LAW, SIMPLIFIED</span>
+                <h1 class="auth-left-title">Your legal questions,<br>answered instantly.</h1>
+                <p class="auth-left-subtitle">Understand your rights, navigate procedures, and get case-backed guidance
+                    — in plain language.</p>
+
+                <div class="auth-cards-list">
+                    <div class="auth-card-item">
+                        <i class="fa-solid fa-scale-balanced auth-card-icon"></i>
+                        <span><strong>IPC, CrPC, RTI</strong> — all major Indian acts covered</span>
+                    </div>
+                    <div class="auth-card-item">
+                        <i class="fa-solid fa-award auth-card-icon"></i>
+                        <span><strong>Case citations</strong> from Supreme Court & High Courts</span>
+                    </div>
+                    <div class="auth-card-item">
+                        <i class="fa-solid fa-language auth-card-icon"></i>
+                        <span>Responds in <strong>English, Hindi & Marathi</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-left-footer">
+                By continuing, you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+
+        <!-- Right Column: Form side -->
+        <div class="auth-right-col">
+            <div class="auth-top-dot-menu" onclick="alert('Options menu is not active in this demo version.')">
+                <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="auth-right-container">
+                <div class="auth-right-header">
+                    <h2>Sign in to continue</h2>
+                    <p>No account? <a onclick="showPage('signup')">Create one free</a></p>
+                </div>
+
+                <div id="login-error" class="error-message hidden"></div>
+
+                <div class="social-login-group">
+                    <button class="social-btn"
+                        onclick="alert('Social sign-in is not active in this demo version. Please use your credentials.')">
+                        <img src="https://img.icons8.com/color/48/google-logo.png" alt="Google"> Google
+                    </button>
+                    <button class="social-btn"
+                        onclick="alert('Social sign-in is not active in this demo version. Please use your credentials.')">
+                        <img src="https://img.icons8.com/ios-filled/50/github.png" alt="GitHub"> GitHub
+                    </button>
+                </div>
+
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+
+                <form id="login-form">
+                    <div class="new-input-group">
+                        <label for="login-username">Email address</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="text" id="login-username" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="new-input-group">
+                        <div class="label-row">
+                            <label for="login-password">Password</label>
+                            <a class="forgot-link" href="#"
+                                onclick="alert('Password reset link is not active in this demo version.')">Forgot
+                                password?</a>
+                        </div>
+                        <div class="new-input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="login-password" class="password-input"
+                                placeholder="Enter your password" required>
+                            <span class="new-toggle-password" onclick="togglePasswordVisibility('login-password')">
+                                <i class="fa-regular fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="auth-options-row">
+                        <label class="new-remember-me">
+                            <input type="checkbox" id="remember-me">
+                            <span>Remember Me</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn">Sign In <i
+                            class="fa-solid fa-arrow-right"></i></button>
+                </form>
+
+                <div class="captcha-terms">
+                    Protected by reCAPTCHA • <a href="#">Privacy</a> • <a href="#">Terms</a>
+                </div>
+
+                <div class="divider-line"></div>
+
+                <div class="auth-security-footer">
+                    <span><i class="fa-solid fa-shield-halved"></i> Secure</span>
+                    <span><i class="fa-solid fa-lock"></i> Encrypted</span>
+                    <span><i class="fa-solid fa-user-shield"></i> Private</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SIGNUP PAGE
+         ============================================ -->
+    <div id="signup-page" class="split-auth-page hidden">
+        <!-- Left Column: Beige side with info -->
+        <div class="auth-left-col">
+            <div class="auth-left-header">
+                <div class="auth-left-logo" onclick="showPage('landing')">
+                    <span class="logo-badge">LG</span> LawGuideAI
+                </div>
+            </div>
+
+            <div class="auth-left-content">
+                <span class="auth-left-tag">INDIAN LAW, SIMPLIFIED</span>
+                <h1 class="auth-left-title">Your legal questions,<br>answered instantly.</h1>
+                <p class="auth-left-subtitle">Understand your rights, navigate procedures, and get case-backed guidance
+                    — in plain language.</p>
+
+                <div class="auth-cards-list">
+                    <div class="auth-card-item">
+                        <i class="fa-solid fa-scale-balanced auth-card-icon"></i>
+                        <span><strong>IPC, CrPC, RTI</strong> — all major Indian acts covered</span>
+                    </div>
+                    <div class="auth-card-item">
+                        <i class="fa-solid fa-award auth-card-icon"></i>
+                        <span><strong>Case citations</strong> from Supreme Court & High Courts</span>
+                    </div>
+                    <div class="auth-card-item">
+                        <i class="fa-solid fa-language auth-card-icon"></i>
+                        <span>Responds in <strong>English, Hindi & Marathi</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-left-footer">
+                By continuing, you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+
+        <!-- Right Column: Form side -->
+        <div class="auth-right-col">
+            <div class="auth-top-dot-menu" onclick="alert('Options menu is not active in this demo version.')">
+                <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="auth-right-container" style="max-width: 440px; margin: 40px 0;">
+                <div class="auth-right-header">
+                    <h2>Create your account</h2>
+                    <p>Already have an account? <a onclick="showPage('login')">Sign in</a></p>
+                </div>
+
+                <div id="signup-error" class="error-message hidden"></div>
+                <div id="signup-success" class="success-message hidden"></div>
+
+                <form id="signup-form">
+                    <div class="new-input-group">
+                        <label for="signup-fullname">Full Name</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input type="text" id="signup-fullname" placeholder="Enter your full name" required>
+                        </div>
+                    </div>
+
+                    <div class="new-input-group">
+                        <label for="signup-email">Email Address</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="signup-email" placeholder="your.email@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="new-input-group">
+                        <label for="signup-username">Username</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-solid fa-at input-icon"></i>
+                            <input type="text" id="signup-username" placeholder="Choose a username" required>
+                        </div>
+                    </div>
+
+                    <div class="new-input-group">
+                        <label for="signup-gender">Gender</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-solid fa-venus-mars input-icon"></i>
+                            <select id="signup-gender" required>
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="avatar-picker" class="avatar-picker" style="margin-bottom: 20px;">
+                        <div class="avatar-picker-title"
+                            style="font-size: 13.5px; font-weight: 600; color: #334155; margin-bottom: 10px;">Choose
+                            your profile avatar</div>
+                        <div id="avatar-grid" class="avatar-grid"></div>
+                    </div>
+
+                    <div class="new-input-group">
+                        <label for="signup-password">Password</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="signup-password" class="password-input" placeholder="••••••••••"
+                                required>
+                            <span class="new-toggle-password" onclick="togglePasswordVisibility('signup-password')">
+                                <i class="fa-regular fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="new-input-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <div class="new-input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="signup-confirm-password" class="password-input"
+                                placeholder="••••••••••" required>
+                            <span class="new-toggle-password"
+                                onclick="togglePasswordVisibility('signup-confirm-password')">
+                                <i class="fa-regular fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn" style="margin-top: 10px;">Create Account <i
+                            class="fa-solid fa-arrow-right"></i></button>
+                </form>
+
+                <div class="captcha-terms">
+                    Protected by reCAPTCHA • <a href="#">Privacy</a> • <a href="#">Terms</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         MAIN APPLICATION
+         ============================================ -->
+    <div id="main-app" class="hidden">
+        <div class="app-container">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <button class="new-chat-btn" style="margin-bottom: 10px;">
+                        <i class="fa-solid fa-plus"></i> New Conversation
+                    </button>
+                    <button class="new-chat-btn" onclick="showPage('landing')"
+                        style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.8);">
+                        <i class="fa-solid fa-house"></i> Home Page
+                    </button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>RECENT CONVERSATIONS</h3>
+                    <div class="history-list" id="history-list">
+                        <!-- History items will be loaded here dynamically -->
+                    </div>
+                </div>
+
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/150?img=68" alt="User" id="user-avatar">
+                    <div class="user-info">
+                        <div class="user-name" id="user-display-name">User</div>
+                        <div class="user-plan">Free Plan</div>
+                    </div>
+                    <i class="fa-solid fa-right-from-bracket logout-btn" onclick="logout()" title="Logout"></i>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <header class="top-bar">
+                    <div class="logo-area">
+                        <button class="mobile-menu-btn" id="mobile-menu-btn" title="Menu">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <div class="logo-icon" onclick="showPage('landing')" style="cursor: pointer;"
+                            title="Back to Home">LG</div>
+                        <span class="logo-text" onclick="showPage('landing')" style="cursor: pointer;"
+                            title="Back to Home">LawGuideAI</span>
+                        <span class="divider"></span>
+                        <span class="page-title"></span>
+                        <span id="doc-status-badge" class="doc-status-badge" title="Document loaded — click to remove">
+                            <i class="fa-solid fa-file-circle-check"></i>
+                            <span class="doc-badge-text" id="doc-badge-text">Doc loaded</span>
+                        </span>
+                    </div>
+                    <div class="header-actions" style="display:flex;align-items:center;gap:12px;">
+                        <button class="export-btn" id="export-chat-btn" title="Export chat as PDF">
+                            <i class="fa-solid fa-file-export"></i>
+                        </button>
+                        <i class="fa-regular fa-bell" style="cursor:pointer;"></i>
+                    </div>
+                </header>
+
+                <div id="chat-view" class="view-container">
+                    <div class="chat-scroll-area">
+                        <div class="message-row bot">
+                            <div class="avatar bot-avatar">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI">
+                            </div>
+                            <div class="message-bubble bot-bubble">
+                                <p>Hello! I'm LawGuideAI, your AI legal assistant for Indian law. I can help you
+                                    understand
+                                    legal concepts, explain procedures, and provide guidance on various legal matters.
+                                </p>
+                                <br>
+                                <p>How can I assist you today?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <div id="legal-topics-panel" class="legal-topics-panel">
+                            <div class="legal-topics-title"><i class="fa-solid fa-scale-balanced"></i> Quick Legal
+                                Topics</div>
+                            <div class="legal-topics-chips">
+                                <span class="topic-chip" data-q="What is an FIR and how to file it?"><i
+                                        class="fa-solid fa-file-shield"></i> FIR Filing</span>
+                                <span class="topic-chip" data-q="Explain tenant rights under Indian law"><i
+                                        class="fa-solid fa-house"></i> Tenant Rights</span>
+                                <span class="topic-chip" data-q="What are my rights if arrested by police in India?"><i
+                                        class="fa-solid fa-handcuffs"></i> Arrest Rights</span>
+                                <span class="topic-chip" data-q="How does divorce work under Hindu Marriage Act?"><i
+                                        class="fa-solid fa-heart-crack"></i> Divorce Law</span>
+                                <span class="topic-chip" data-q="What is the Consumer Protection Act 2019?"><i
+                                        class="fa-solid fa-shield-halved"></i> Consumer Rights</span>
+                                <span class="topic-chip" data-q="Explain property inheritance laws in India"><i
+                                        class="fa-solid fa-landmark"></i> Inheritance</span>
+                                <span class="topic-chip" data-q="What is RTI and how to file an RTI application?"><i
+                                        class="fa-solid fa-magnifying-glass"></i> RTI</span>
+                                <span class="topic-chip" data-q="Explain POCSO Act for child protection"><i
+                                        class="fa-solid fa-child-reaching"></i> POCSO Act</span>
+                                <span class="topic-chip" data-q="What are cyber crime laws in India?"><i
+                                        class="fa-solid fa-laptop-code"></i> Cyber Crime</span>
+                                <span class="topic-chip" data-q="Explain labour laws and employee rights in India"><i
+                                        class="fa-solid fa-briefcase"></i> Labour Laws</span>
+                                <span class="topic-chip" data-q="What is bail and how to apply for bail in India?"><i
+                                        class="fa-solid fa-gavel"></i> Bail Process</span>
+                                <span class="topic-chip" data-q="Explain domestic violence laws in India"><i
+                                        class="fa-solid fa-person-shelter"></i> Domestic Violence</span>
+                            </div>
+                        </div>
+                        <div class="suggested-chips">
+                            <button id="upload-btn"><i class="fa-regular fa-file"></i> Upload Document</button>
+                            <button id="topics-toggle-btn"><i class="fa-solid fa-scale-balanced"></i> Legal
+                                Topics</button>
+                            <button id="ask-example-btn"><i class="fa-regular fa-circle-question"></i> Ask
+                                Example</button>
+                        </div>
+                        <input type="file" id="file-input" style="display: none;"
+                            accept=".pdf,.docx,.txt,.png,.jpg,.jpeg">
+                        <div class="input-box">
+                            <i class="fa-solid fa-paperclip attach-icon" id="attach-icon-btn" title="Attach file"></i>
+                            <input type="text" id="main-input"
+                                placeholder="Ask a legal question or describe your situation..." maxlength="2000">
+                            <span class="char-counter" id="char-counter">0/2000</span>
+                            <button class="voice-btn" id="voice-btn" title="Voice input">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <button class="send-btn"><i class="fa-regular fa-paper-plane"></i></button>
+                        </div>
+                        <div class="disclaimer">
+                            LawGuideAI provides general legal information. For specific legal advice, please consult a
+                            qualified attorney.
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
