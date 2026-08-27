@@ -1,0 +1,1 @@
+# Law Mitra package initialization
