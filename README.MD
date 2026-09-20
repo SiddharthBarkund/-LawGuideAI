@@ -191,6 +191,3 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-## ⚖️ Legal Disclaimer
-
-> **IMPORTANT**: **LawGuideAI** is designed exclusively for educational, informational, and preliminary guidance purposes. It does **not** constitute legal advice and does not create an attorney-client relationship. Users should consult a qualified advocate or legal professional for formal legal proceedings or binding advice.
