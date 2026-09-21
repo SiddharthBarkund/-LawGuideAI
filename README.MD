@@ -183,11 +183,4 @@ Then visit **`http://localhost:5000`** in your browser.
 
 ---
 
-## ⭐ Support & Contributing
-
-Contributions, issues, and feature requests are welcome!
-- If you find this project helpful, please give it a **⭐ on GitHub**!
-- Feel free to fork the repository and submit a Pull Request.
-
----
 
