@@ -174,13 +174,5 @@ Then visit **`http://localhost:5000`** in your browser.
 
 ---
 
-## 👨‍💻 Author
-
-**Siddharth Barkund**
-- 🎓 B.Tech in Artificial Intelligence & Machine Learning
-- 💡 Passionate about Agentic AI, NLP, and Full-Stack Engineering
-- 🌐 GitHub: [@SiddharthBarkund](https://github.com/SiddharthBarkund)
-
----
 
 
